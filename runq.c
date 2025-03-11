@@ -237,6 +237,7 @@ void read_checkpoint(char* checkpoint, Config* config, TransformerWeights* weigh
     int group_size; // the group size used in quantization
     if (fread(&group_size, sizeof(int), 1, file) != 1) { exit(EXIT_FAILURE); }
     GS = group_size; // set as global, as it will be used in many places
+    printf("Using group size of %d\n", GS);
     // figure out the file size
     fseek(file, 0, SEEK_END); // move file pointer to end of file
     *file_size = ftell(file); // get the file size, in bytes
@@ -318,6 +319,8 @@ void matmul(float* xout, QuantizedTensor *x, QuantizedTensor *w, int n, int d) {
     // W (d,n) @ x (n,) -> xout (d,)
     // by far the most amount of time is spent inside this little function
     // inputs to this function are both quantized
+
+    // printf("MatMul dimension (n, d) = (%d, %d)\n", n, d);
 
     int i;
     #pragma omp parallel for private(i)
